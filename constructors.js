@@ -112,7 +112,6 @@ function Spellcaster(name, health, mana){
     this.health = 0;
   } else {
     this.health -= damage;
-    console.log(this.name + " was dealt " + damage + " damage and now has " + this.health + " health");
   }
   if (this.health <= 0) {
     this.isAlive = false;
@@ -121,35 +120,23 @@ function Spellcaster(name, health, mana){
 
  Spellcaster.prototype.spendMana = function(cost){
   if (this.mana - cost >= 0 ){
-    console.log ("SPENDING: " + this.name + " started with mana " + this. mana);
     this.mana -= cost;
-    console.log("NOW has mana " + this.mana);
     return true;
   } else {
-    console.log("SPENDING: " + this.name + " has " + this.mana + " and is trying to buy a spell costing " + cost);
     return false;
   }
  };
 
  Spellcaster.prototype.invoke = function(spell, target){
-    if (spell == undefined || spell.name === undefined || spell.cost === undefined ) { return false; }
-    if (spell instanceof Spell && spell !== null && !(spell instanceof DamageSpell) && (spell.cost > 0) && this.mana >= spell.cost){
-        console.log("NON-DAMAGE-SPELL: " + spell.name + " is a spell");
-        console.log(this.name + " is invoking " + spell.name + " which costs " + spell.cost);
+    if (spell && spell.name === undefined && spell.cost === undefined && spell.name !== null && spell.cost !== null ) { return false; }
+    if (spell instanceof Spell && !(spell instanceof DamageSpell) && this.mana >= spell.cost){
         this.spendMana(spell.cost);
-        console.log(this.name + " invoked " + spell.name + " and now has " + this.mana + " mana");
         return true;
-    } else if (spell !== null && spell instanceof DamageSpell && (target) && (spell.cost !== undefined) && this.mana >= spell.cost && target.isAlive) {
-        console.log(spell.name + " is a damage spell");
-        console.log(this.name + " has " + this.mana + " and is trying to buy a spell that is " + spell.cost + ". ");
-        console.log("Trying to inflict damage on " + target.name + " while isAlive is " + target.isAlive + " and he has health of " + target.health + " and is being inflicted damage of " + spell.damage);
+    } else if (spell instanceof DamageSpell && target && this.mana >= spell.cost && target.isAlive) {
         this.spendMana(spell.cost);
-        console.log("Now " + this.name + " has " + this.mana + " mana");
-        this.inflictDamage.call(target, spell.damage);
-        console.log("Now " + target.name + " has " + target.health + " health");
+        target.inflictDamage(spell.damage);
         return true;
-    } else if (spell.cost !== undefined) {
-        console.log(this.name + " has " + this.mana + " and is trying to buy a spell that is " + spell.cost + ". ");
+    } else {
         return false;
     }
     return false;
